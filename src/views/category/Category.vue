@@ -1,6 +1,6 @@
 <template>
-  <div class="wrapper">
-    <ul class="content" ref="aaa">
+  <div class="wrapper" ref="aaa">
+    <ul class="content" >
       <li>分类列表1</li>
       <li>分类列表2</li>
       <li>分类列表3</li>
