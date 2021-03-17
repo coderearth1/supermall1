@@ -1,63 +1,18 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
+    <scroll class="conten"
+            ref="scroll"
+            :probe-type="3"
+            @scroll="contentScroll"
+            :pull-up-load="true" @pullingUp="loadMore">
     <home-swiper :banners="banners"/>
     <recommend-view :recommends="recommends"/>
     <feature-view />
     <tab-control :titles="['流行','新款','精选']" class="tab-control" @tabClick="tabClick"/>
     <goods-list :goods="showGoods"/>
-    <ul>
-      <li>你哈1</li>
-      <li>你哈2</li>
-      <li>你哈3</li>
-      <li>你哈4</li>
-      <li>你哈5</li>
-      <li>你哈6</li>
-      <li>你哈7</li>
-      <li>你哈8</li>
-      <li>你哈9</li>
-      <li>你哈10</li>
-      <li>你哈11</li>
-      <li>你哈12</li>
-      <li>你哈13</li>
-      <li>你哈14</li>
-      <li>你哈15</li>
-      <li>你哈16</li>
-      <li>你哈17</li>
-      <li>你哈18</li>
-      <li>你哈19</li>
-      <li>你哈20</li>
-      <li>你哈21</li>
-      <li>你哈22</li>
-      <li>你哈23</li>
-      <li>你哈24</li>
-      <li>你哈25</li>
-      <li>你哈26</li>
-      <li>你哈27</li>
-      <li>你哈28</li>
-      <li>你哈29</li>
-      <li>你哈30</li>
-      <li>你哈31</li>
-      <li>你哈32</li>
-      <li>你哈33</li>
-      <li>你哈34</li>
-      <li>你哈35</li>
-      <li>你哈36</li>
-      <li>你哈37</li>
-      <li>你哈38</li>
-      <li>你哈39</li>
-      <li>你哈40</li>
-      <li>你哈41</li>
-      <li>你哈42</li>
-      <li>你哈43</li>
-      <li>你哈44</li>
-      <li>你哈45</li>
-      <li>你哈46</li>
-      <li>你哈47</li>
-      <li>你哈48</li>
-      <li>你哈49</li>
-      <li>你哈50</li>
-    </ul>
+    </scroll>
+    <back-top @click.native="backClick" v-show="isShowBackTop"/>
   </div>
 </template>
 
@@ -69,7 +24,8 @@
   import NavBar from "components/common/navbar/NavBar";
   import TabControl from "components/content/tabControl/TabControl";
   import GoodsList from "components/content/goods/GoodsList";
-
+  import Scroll from "components/common/scroll/Scroll";
+  import BackTop from "components/content/backTop/BackTop";
 
   import {getHomeMultidata,getHomeGoods} from "network/home";
   export default {
@@ -80,7 +36,9 @@
       HomeSwiper,
       RecommendView,
       FeatureView,
-      GoodsList
+      GoodsList,
+      Scroll,
+      BackTop
 
     },
     data() {
@@ -92,7 +50,8 @@
           'new': {page:0,list: []},
           'sell': {page:0,list: []},
         },
-        currentType: 'pop'
+        currentType: 'pop',
+        isShowBackTop: false
       }
     },
     computed: {
@@ -107,6 +66,8 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+    },
+    mounted() {
     },
     methods: {
       /*
@@ -125,6 +86,15 @@
             break
         }
       },
+      backClick() {
+        this.$refs.scroll.scrollTo(0,0)
+      },
+      contentScroll(position) {
+        this.isShowBackTop = -position.y > 1000
+      },
+      loadMore() {
+        this.getHomeGoods(this.currentType)
+      },
 
 
       //网络请求方法
@@ -142,6 +112,8 @@
           // console.log(res);
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page += 1
+
+          this.$refs.scroll.finishPullUp()
         })
       }
     }
@@ -151,7 +123,9 @@
 <style scoped>
   #home {
     padding-top: 44px;
-    padding-bottom: 49px;
+    /*padding-bottom: 49px;*/
+    height: 100vh;
+    position: relative;
   }
   .home-nav {
     background-color: var(--color-tint);
@@ -167,5 +141,15 @@
     position: sticky;
     top: 44px;
     z-index: 8;
+  }
+  .conten {
+    /*height: calc(100% - 93px);*/
+    overflow: hidden;
+    /*margin-top: 44px;*/
+    position: absolute;
+    top: 44px;
+    bottom: 49px;
+    left: 0;
+    right: 0;
   }
 </style>
