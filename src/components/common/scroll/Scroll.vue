@@ -32,23 +32,31 @@
         probeType: this.probeType,
         pullUpLoad: this.pullUpLoad
       })
-      //监听滚动的区域
-      this.scroll.on('scroll',(position) => {
-        // console.log(position);
-        this.$emit('scroll',position)
-      })
 
-      this.scroll.on('pullingUp',() => {
-        this.$emit('pullingUp')
-      })
+      // this.scroll.refresh()
+      if (this.probeType === 2 || this.probeType === 3) {
+        //监听滚动的区域
+        this.scroll.on('scroll',(position) => {
+          // console.log(position);
+          this.$emit('scroll',position)
+        })
+      }
+      if(this.pullUpLoad) {
+        this.scroll.on('pullingUp',() => {
+          this.$emit('pullingUp')
+        })
+      }
 
     },
     methods: {
       scrollTo(x,y,time=300) {
-        this.scroll.scrollTo(x,y,time)
+        this.scroll && this.scroll.scrollTo && this.scroll.scrollTo(x,y,time)
       },
       finishPullUp() {
         this.scroll.finishPullUp()
+      },
+      refresh() {
+        this.scroll && this.scroll.refresh()
       }
     }
   }

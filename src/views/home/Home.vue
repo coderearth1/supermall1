@@ -9,7 +9,7 @@
     <home-swiper :banners="banners"/>
     <recommend-view :recommends="recommends"/>
     <feature-view />
-    <tab-control :titles="['流行','新款','精选']" class="tab-control" @tabClick="tabClick"/>
+    <tab-control :titles="['流行','新款','精选']" ref="tabControl" @tabClick="tabClick"/>
     <goods-list :goods="showGoods"/>
     </scroll>
     <back-top @click.native="backClick" v-show="isShowBackTop"/>
@@ -26,7 +26,7 @@
   import GoodsList from "components/content/goods/GoodsList";
   import Scroll from "components/common/scroll/Scroll";
   import BackTop from "components/content/backTop/BackTop";
-
+  import {debounce} from "common/utils";
   import {getHomeMultidata,getHomeGoods} from "network/home";
   export default {
     name: "Home",
@@ -51,7 +51,8 @@
           'sell': {page:0,list: []},
         },
         currentType: 'pop',
-        isShowBackTop: false
+        isShowBackTop: false,
+        tabOffsetTop: 0
       }
     },
     computed: {
@@ -66,13 +67,25 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+
+
+
     },
     mounted() {
+      //图片加载完成的事件监听
+      const refresh = debounce(this.$refs.scroll.refresh,200)
+
+      //开始间挺img图片加载完成
+      this.$bus.$on('itemImageLoad',() => {
+        refresh()
+      })
+      console.log(this.$refs.tabControl.$el.offsetTop);
     },
     methods: {
       /*
       *事件监听的相关方法
       * */
+
       tabClick(index) {
         switch (index) {
           case 0:
@@ -136,11 +149,6 @@
     top: 0;
     bottom: 0;
     z-index: 9;
-  }
-  .tab-control {
-    position: sticky;
-    top: 44px;
-    z-index: 8;
   }
   .conten {
     /*height: calc(100% - 93px);*/
