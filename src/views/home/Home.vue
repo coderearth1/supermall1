@@ -83,7 +83,7 @@
     },
     methods: {
       /*
-      *事件监听的相关方法
+      *事件监听的相关方法asdasdas
       * */
 
       tabClick(index) {
